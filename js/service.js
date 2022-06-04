@@ -100,9 +100,9 @@ function showGastos(gastos) {
 				data +
 				"</td>" +
 				"<td>" +
-				`<div class="d-grid gap-2 d-md-flex justify-content-md-end" data-bs-toggle="modal"
-				data-bs-target="#myModal">
-					<button onClick="editGasto(${gasto.id}, \'${gasto.nome}\', ${gasto.valor}, \'${gasto.data}\')" type="button" class="btn btn-warning">Editar</button> <button onClick="deleteGasto(${gasto.id})" type="button" class="btn btn-danger">Deletar</button>
+				`<div class="d-grid gap-2 d-md-flex justify-content-md-end">
+					<button onClick="editGasto(${gasto.id}, \'${gasto.nome}\', ${gasto.valor}, \'${gasto.data}\')" data-bs-toggle="modal"
+					data-bs-target="#myModal" type="button" class="btn btn-warning">Editar</button> <button onClick="deleteGasto(${gasto.id})" type="button" class="btn btn-danger">Deletar</button>
 				</div>` +
 				"</td>" +
 				"</tr>"
