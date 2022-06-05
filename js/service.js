@@ -7,6 +7,11 @@ $(document).ready(() => {
 	document.getElementById("data").value = formatDate(new Date());
 });
 
+function randomIntFromInterval(min, max) {
+	// min and max included
+	return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
 let mockData = [
 	{
 		id: 96,
@@ -79,6 +84,7 @@ function getData() {
 }
 
 function showGastos(gastos) {
+	$("#gasto-data").replaceWith(`<tbody id="gasto-data"></tbody>`);
 	gastos.forEach((gasto) => {
 		const id = `<h4>${gasto.id}</h4>`;
 		const nome = `<h4>${gasto.nome}</h4>`;
@@ -101,8 +107,7 @@ function showGastos(gastos) {
 				"</td>" +
 				"<td>" +
 				`<div class="d-grid gap-2 d-md-flex justify-content-md-end">
-					<button onClick="editGasto(${gasto.id}, \'${gasto.nome}\', ${gasto.valor}, \'${gasto.data}\')" data-bs-toggle="modal"
-					data-bs-target="#myModal" type="button" class="btn btn-warning">Editar</button> <button onClick="deleteGasto(${gasto.id})" type="button" class="btn btn-danger">Deletar</button>
+					<button onClick="editGasto(${gasto.id}, \'${gasto.nome}\', ${gasto.valor}, \'${gasto.data}\')" type="button" class="btn btn-warning">Editar</button> <button onClick="deleteGasto(${gasto.id})" type="button" class="btn btn-danger">Deletar</button>
 				</div>` +
 				"</td>" +
 				"</tr>"
@@ -129,8 +134,40 @@ function getGasto(oldGasto) {
 
 function novoGasto() {
 	document.getElementById("nome").value = "";
-	document.getElementById("valor").value = 0.01;
+	document.getElementById("valor").value = "";
 	document.getElementById("data").value = formatDate(new Date());
+	document
+		.getElementById("submitButton")
+		.addEventListener("click", function (e) {
+			submitGasto();
+			const old_element = document.getElementById("submitButton");
+			const new_element = old_element.cloneNode(true);
+			old_element.parentNode.replaceChild(new_element, old_element);
+		});
+}
+
+function submitGasto(id) {
+	const gasto = {
+		id: randomIntFromInterval(0, 100),
+		nome: document.getElementById("nome").value,
+		valor: parseFloat(
+			document.getElementById("valor").value.replace(",", "")
+		),
+		data: new Date(document.getElementById("data").value),
+	};
+	console.log(gasto);
+
+	if (id) {
+		objIndex = mockData.findIndex((obj) => obj.id == id);
+		mockData[objIndex].nome = gasto.nome;
+		mockData[objIndex].valor = gasto.valor;
+		mockData[objIndex].data = gasto.data;
+	} else {
+		mockData.push(gasto);
+	}
+	let gastos = formatGastos(mockData);
+	showGastos(gastos);
+	console.log(gastos);
 }
 
 function deleteGasto(id) {
@@ -152,7 +189,6 @@ function deleteGasto(id) {
 	console.log(mockData);
 	mockData = mockData.filter((gasto) => gasto.id !== id);
 	let gastos = formatGastos(mockData);
-	$("#gasto-data").replaceWith(`<tbody id="gasto-data"></tbody>`);
 	showGastos(gastos);
 }
 
@@ -160,6 +196,16 @@ function editGasto(id, nome, valor, data) {
 	document.getElementById("nome").value = nome;
 	document.getElementById("valor").value = valor;
 	document.getElementById("data").value = formatDate(new Date(data));
+	submitButton = document.getElementById("submitButton");
+	console.log(submitButton);
+	submitButton.addEventListener("click", function (e) {
+		submitGasto(id);
+		const old_element = document.getElementById("submitButton");
+		const new_element = old_element.cloneNode(true);
+		old_element.parentNode.replaceChild(new_element, old_element);
+	});
+	$("#myModal").modal("toggle");
+
 	// $.ajax({
 	// 	url: baseUrlAPI,
 	// 	type: "PUT",
@@ -204,14 +250,14 @@ var options = {
 	onKeyPress: function (cep, e, field, options) {
 		if (cep.length <= 6) {
 			var inputVal = parseFloat(cep);
-			jQuery("#money").val(inputVal.toFixed(2));
+			jQuery("#valor").val(inputVal.toFixed(2));
 		}
 
 		// setCaretToPos(jQuery('#money')[0], 4);
 
 		var masks = ["#,##0.00", "0.00"];
 		mask = cep == 0 ? masks[1] : masks[0];
-		$("#money").mask(mask, options);
+		$("#valor").mask(mask, options);
 	},
 	reverse: true,
 };
