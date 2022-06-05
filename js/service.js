@@ -1,5 +1,5 @@
 //localhost:8080/gastos
-const baseUrlAPI = "localhost:8080/gastos";
+const baseUrlAPI = "http://localhost:3000/perfil";
 
 $(document).ready(() => {
 	getData();
@@ -62,25 +62,29 @@ function formatDate(date, isDMY = false) {
 }
 
 function getData() {
-	// $.ajax({
-	// 	url: baseUrlAPI,
-	// 	type: "GET",
-	// 	beforeSend: function () {
-	// 		console.log("Carregando....");
-	// 	},
-	// })
-	// 	.done(function (data) {
-	// 		let gastos = formatGastos(data);
-	// 		console.log(gastos);
-	// 		showGastos(gastos);
-	// 	})
-	// 	.fail(function (msg) {
-	// 		const error = JSON.parse(msg.responseText);
-	// 		console.log(error);
-	// 	});
+	$.ajax({
+		url: baseUrlAPI,
+		headers: {
+			"Content-Type": "application/json",
+		},
+		type: "GET",
+		dataType: "json",
+		beforeSend: function () {
+			console.log("Carregando....");
+		},
+	})
+		.done(function (data) {
+			let gastos = formatGastos(data);
+			console.log(data);
+			showGastos(gastos);
+		})
+		.fail(function (msg) {
+			const error = JSON.parse(msg.responseText);
+			console.log(error);
+		});
 
-	let gastos = formatGastos(mockData);
-	showGastos(gastos);
+	// let gastos = formatGastos(mockData);
+	// showGastos(gastos);
 }
 
 function showGastos(gastos) {
@@ -148,48 +152,64 @@ function novoGasto() {
 
 function submitGasto(id) {
 	const gasto = {
-		id: randomIntFromInterval(0, 100),
 		nome: document.getElementById("nome").value,
 		valor: parseFloat(
 			document.getElementById("valor").value.replace(",", "")
 		),
 		data: new Date(document.getElementById("data").value),
 	};
-	console.log(gasto);
-
 	if (id) {
-		objIndex = mockData.findIndex((obj) => obj.id == id);
-		mockData[objIndex].nome = gasto.nome;
-		mockData[objIndex].valor = gasto.valor;
-		mockData[objIndex].data = gasto.data;
+		$.ajax({
+			url: baseUrlAPI + "/" + id,
+			type: "PUT",
+			contentType: "application/json",
+			data: JSON.stringify(gasto),
+			beforeSend: function () {
+				console.log("Carregando....");
+			},
+		})
+			.done(function (data) {
+				getData();
+			})
+			.fail(function (msg) {
+				const error = JSON.parse(msg.responseText);
+				console.log(error);
+			});
 	} else {
-		mockData.push(gasto);
+		$.ajax({
+			url: baseUrlAPI,
+			type: "POST",
+			contentType: "application/json",
+			data: JSON.stringify(gasto),
+			beforeSend: function () {
+				console.log("Carregando....");
+			},
+		})
+			.done(function (data) {
+				getData();
+			})
+			.fail(function (msg) {
+				const error = JSON.parse(msg.responseText);
+				console.log(error);
+			});
 	}
-	let gastos = formatGastos(mockData);
-	showGastos(gastos);
-	console.log(gastos);
 }
 
 function deleteGasto(id) {
-	// $.ajax({
-	// 	url: baseUrlAPI,
-	// 	type: "DELETE",
-	// 	beforeSend: function () {
-	// 		console.log("Carregando....");
-	// 	},
-	// })
-	// 	.done(function (data) {
-	// 		let gastos = formatGastos(mockData);
-	// 		showGastos(gastos);
-	// 	})
-	// 	.fail(function (msg) {
-	// 		const error = JSON.parse(msg.responseText);
-	// 		console.log(error);
-	// 	});
-	console.log(mockData);
-	mockData = mockData.filter((gasto) => gasto.id !== id);
-	let gastos = formatGastos(mockData);
-	showGastos(gastos);
+	$.ajax({
+		url: baseUrlAPI + "/" + id,
+		type: "DELETE",
+		beforeSend: function () {
+			console.log("Carregando....");
+		},
+	})
+		.done(function (data) {
+			getData();
+		})
+		.fail(function (msg) {
+			const error = JSON.parse(msg.responseText);
+			console.log(error);
+		});
 }
 
 function editGasto(id, nome, valor, data) {
