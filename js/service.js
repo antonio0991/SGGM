@@ -99,7 +99,7 @@ function getGasto(oldGasto) {
 
 function novoGasto() {
 	document.getElementById("nome").value = "";
-	document.getElementById("valor").value = "";
+	document.getElementById("valor").value = "0.00";
 	document.getElementById("data").value = formatDate(new Date());
 	document
 		.getElementById("submitButton")
@@ -186,22 +186,6 @@ function editGasto(id, nome, valor, data) {
 		old_element.parentNode.replaceChild(new_element, old_element);
 	});
 	$("#myModal").modal("toggle");
-
-	// $.ajax({
-	// 	url: baseUrlAPI,
-	// 	type: "PUT",
-	// 	beforeSend: function () {
-	// 		console.log("Carregando....");
-	// 	},
-	// })
-	// 	.done(function (data) {
-	// 		let gastos = formatGastos(mockData);
-	// 		showGastos(gastos);
-	// 	})
-	// 	.fail(function (msg) {
-	// 		const error = JSON.parse(msg.responseText);
-	// 		console.log(error);
-	// 	});
 }
 
 function setSelectionRange(input, selectionStart, selectionEnd) {
@@ -233,8 +217,6 @@ var options = {
 			var inputVal = parseFloat(cep);
 			jQuery("#valor").val(inputVal.toFixed(2));
 		}
-
-		// setCaretToPos(jQuery('#money')[0], 4);
 
 		var masks = ["#,##0.00", "0.00"];
 		mask = cep == 0 ? masks[1] : masks[0];
